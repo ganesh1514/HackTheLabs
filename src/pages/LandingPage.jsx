@@ -8,7 +8,34 @@ import {
   AccordionTrigger,
 } from "@/components/ui/accordion";
 import { faqData } from "@/constants/faq"; // Assuming you have a data file for FAQs
+import { useEffect, useState } from "react";
+import toast from "react-hot-toast";
+import { useNavigate } from "react-router-dom";
 const LandingPage = () => {
+  const navigate = useNavigate();
+  const [longUrl, setLongUrl] = useState("");
+  const [isMobile, setIsMobile] = useState(
+    window.innerWidth < 640 // Check if the device is mobile based on width
+  );
+  const handleShorten = (e) => {
+    e.preventDefault();
+    if (!longUrl) {
+      toast.error("Please enter a valid URL");
+      return;
+    }
+    navigate(`/auth?createNew=${longUrl}`);
+  };
+  // now i want to change the placeholder text based on device size
+  useEffect(() => {
+    const handleResize = () => {
+      setIsMobile(window.innerWidth < 640);
+    };
+    window.addEventListener("resize", handleResize);
+    return () => {
+      window.removeEventListener("resize", handleResize);
+    };
+  }, []);
+
   return (
     <>
       <div
@@ -31,17 +58,28 @@ const LandingPage = () => {
         >
           Yes!! You can use it for your practical lab exams too🤫
         </p>
-        <form className="flex flex-col sm:flex-row items-start sm:items-center gap-4 my-6 sm:my-10 w-full sm:w-2/3 lg:w-1/2">
+        <form
+          onSubmit={handleShorten}
+          className="flex flex-col sm:flex-row items-start sm:items-center gap-4 my-6 sm:my-10 w-full sm:w-2/3 lg:w-1/2"
+        >
           <div className="relative flex-1 sm:flex-2 w-full group">
             <div className="absolute -inset-0.5 bg-gradient-to-r from-primary-orange-shade via-primary-orange to-primary-orange-tint rounded-lg opacity-60 group-focus-within:opacity-0  transition-all duration-200 ease-out"></div>
-            <Input
-              className={
-                "relative flex-1 h-full p-4 bg-black focus-outline-none"
-              }
-              // onChange={}
-              type="url"
-              placeholder={"Paste your URL here"}
-            />
+            <div className="relative">
+              {isMobile && (
+                <p className="text-sm text-white">Paste your URL below</p>
+              )}
+              <Input
+                className={" flex-1 h-full p-4 bg-black focus-outline-none"}
+                value={longUrl}
+                onChange={(e) => setLongUrl(e.target.value)}
+                type="url"
+                placeholder={
+                  isMobile
+                    ? "eg: https://example.com"
+                    : "Paste your URL here, e.g. https://example.com"
+                }
+              />
+            </div>
           </div>
           <Button
             className="w-full  flex-0 sm:w-auto cursor-pointer h-full px-4 py-4"
