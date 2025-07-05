@@ -1,5 +1,6 @@
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import z from "zod";
 
 import {
   Accordion,
@@ -11,24 +12,38 @@ import { faqData } from "@/constants/faq"; // Assuming you have a data file for 
 import { useEffect, useState } from "react";
 import toast from "react-hot-toast";
 import { useNavigate } from "react-router-dom";
+
 const LandingPage = () => {
   const navigate = useNavigate();
   const [longUrl, setLongUrl] = useState("");
   const [isMobile, setIsMobile] = useState(
     window.innerWidth < 640 // Check if the device is mobile based on width
   );
+
+  const urlSchema = z.object({
+    longUrl: z.string().url("Please enter a valid URL"),
+  });
+
+  const validateUrl = (url) => {
+    const result = urlSchema.safeParse({ longUrl: url });
+    if (!result.success) {
+      toast.error(result.error.errors[0].message);
+      return false;
+    }
+    return true;
+  };
   const handleShorten = (e) => {
     e.preventDefault();
-    if (!longUrl) {
-      toast.error("Please enter a valid URL");
-      return;
+    if (!validateUrl(longUrl)) {
+      return; // If the URL is invalid, do not proceed
     }
     navigate(`/auth?createNew=${longUrl}`);
   };
+
   // now i want to change the placeholder text based on device size
   useEffect(() => {
     const handleResize = () => {
-      setIsMobile(window.innerWidth < 640);
+      setIsMobile(window.innerWidth < 768);
     };
     window.addEventListener("resize", handleResize);
     return () => {
@@ -60,16 +75,19 @@ const LandingPage = () => {
         </p>
         <form
           onSubmit={handleShorten}
+          noValidate // Disable HTML5 validation
           className="flex flex-col sm:flex-row items-start sm:items-center gap-4 my-6 sm:my-10 w-full sm:w-2/3 lg:w-1/2"
         >
           <div className="relative flex-1 sm:flex-2 w-full group">
             <div className="absolute -inset-0.5 bg-gradient-to-r from-primary-orange-shade via-primary-orange to-primary-orange-tint rounded-lg opacity-60 group-focus-within:opacity-0  transition-all duration-200 ease-out"></div>
             <div className="relative">
               {isMobile && (
-                <p className="text-sm text-white">Paste your URL below</p>
+                <p className="text-sm ml-2 text-white">Paste your URL below</p>
               )}
               <Input
-                className={" flex-1 h-full p-4 bg-black focus-outline-none"}
+                className={
+                  " flex-1 h-full px-4 py-2 bg-black focus-outline-none"
+                }
                 value={longUrl}
                 onChange={(e) => setLongUrl(e.target.value)}
                 type="url"
@@ -82,7 +100,7 @@ const LandingPage = () => {
             </div>
           </div>
           <Button
-            className="w-full  flex-0 sm:w-auto cursor-pointer h-full px-4 py-4"
+            className="w-full  flex-0 sm:w-auto cursor-pointer h-full px-4 py-2"
             type="submit"
           >
             Shorten it!
@@ -94,7 +112,6 @@ const LandingPage = () => {
           type="single"
           collapsible
           className="w-full sm:w-2/3 lg:w-1/2 mt-8 rounded-lg shadow-lg sm:mx-auto"
-          defaultValue="item-1"
         >
           {faqData.map((faq, index) => (
             <AccordionItem
