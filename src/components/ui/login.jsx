@@ -18,6 +18,7 @@ import { Eye, EyeOff, Loader2 } from "lucide-react";
 import useFetch from "@/Hooks/useFetch";
 import { login, gLogin } from "@/db/apiAuth";
 import toast from "react-hot-toast";
+import ForgotPassword from "./ForgotPassword";
 
 import { useNavigate, useSearchParams } from "react-router-dom";
 const Login = () => {
@@ -27,6 +28,7 @@ const Login = () => {
   });
   const [errors, setErrors] = useState({});
   const [showPassword, setShowPassword] = useState(false);
+  const [showForgotPassword, setShowForgotPassword] = useState(false);
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
   const longUrl = searchParams.get("createNew");
@@ -120,6 +122,10 @@ const Login = () => {
     }
   }, [isAuthenticated, navigate, longUrl]);
 
+  if (showForgotPassword) {
+    return <ForgotPassword onBack={() => setShowForgotPassword(false)} />;
+  }
+
   return (
     <Card className={"w-full max-w-md border-gray-600"}>
       <CardHeader>
@@ -146,12 +152,13 @@ const Login = () => {
             <div className="grid gap-2">
               <div className="flex items-center">
                 <Label htmlFor="password">Password</Label>
-                <a
-                  href="#"
-                  className="ml-auto inline-block text-sm underline-offset-4 hover:underline"
+                <button
+                  type="button"
+                  onClick={() => setShowForgotPassword(true)}
+                  className="ml-auto inline-block text-sm underline-offset-4 hover:underline text-primary-orange"
                 >
                   Forgot your password?
-                </a>
+                </button>
               </div>
               <div className="relative">
                 <Input

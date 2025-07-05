@@ -78,3 +78,34 @@ export const signUp = async ({ email, password, username, profilePicture }) => {
 
   return data;
 };
+
+export const resetPassword = async ({ email }) => {
+  const baseUrl = import.meta.env.VITE_SITE_URL || window.location.origin;
+  const redirectUrl = `${baseUrl}/reset-password`;
+
+  const { error } = await supabase.auth.resetPasswordForEmail(email, {
+    redirectTo: redirectUrl,
+  });
+
+  if (error) {
+    toast.error(error.message);
+    return;
+  }
+
+  toast.success("Password reset email sent! Check your inbox.");
+  return true;
+};
+
+export const updatePassword = async ({ password }) => {
+  const { error } = await supabase.auth.updateUser({
+    password: password,
+  });
+
+  if (error) {
+    toast.error(error.message);
+    return;
+  }
+
+  toast.success("Password updated successfully!");
+  return true;
+};

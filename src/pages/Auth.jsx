@@ -5,7 +5,7 @@ import SignUp from "@/components/ui/SignUp";
 const Auth = () => {
   const [searchParams] = useSearchParams();
   return (
-    <div className="mt-20 flex flex-col items-center gap-15">
+    <div className="mt-10 flex flex-col items-center gap-15">
       <h1 className="text-2xl sm:text-4xl font-bold">
         {searchParams.get("createNew") ? (
           <>

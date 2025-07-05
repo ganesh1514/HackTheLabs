@@ -66,6 +66,7 @@ const SignUp = () => {
           message: "Only JPEG, PNG, and WEBP files are allowed",
         }
       )
+      .nullable()
       .optional(),
   });
 
@@ -153,7 +154,7 @@ const SignUp = () => {
   }, [isAuthenticated, navigate, searchParams]);
 
   return (
-    <Card className={"w-full max-w-md border-gray-600"}>
+    <Card className={"w-full max-w-md  border-gray-600"}>
       <CardHeader>
         <CardTitle>Namaste 🙏!</CardTitle>
         <CardDescription>

@@ -4,11 +4,11 @@
   "version": "0.0.0",
   "type": "module",
   "scripts": {
-    "dev": "vite --port 5173",
+    "dev": "vite --port 5173 --mode development",
     "build": "vite build",
-    "host": "vite --host",
+    "host": "vite --host --port 5173 --mode development",
     "lint": "eslint .",
-    "preview": "vite preview --port 4173 --host"
+    "preview": "vite preview --port 4173 --host --mode production"
   },
   "dependencies": {
     "@radix-ui/react-accordion": "^1.2.11",
