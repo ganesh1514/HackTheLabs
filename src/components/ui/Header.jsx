@@ -46,8 +46,9 @@ const Header = () => {
                 <AvatarImage
                   src={userProfile?.profilePicture || null}
                   alt="User Avatar"
+                  className={"object-contain"}
                 />
-                <AvatarFallback>
+                <AvatarFallback className="bg-primary-orange text-white">
                   {(userProfile?.username || userProfile?.name)
                     ?.charAt(0)
                     ?.toUpperCase() || "U"}

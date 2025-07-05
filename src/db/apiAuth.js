@@ -2,11 +2,12 @@ import toast from "react-hot-toast";
 import supabase from "./supabase";
 
 export const gLogin = async ({ provider, source = "login" }) => {
-  console.log("gLogin called with provider:", provider);
+  const baseUrl = import.meta.env.VITE_SITE_URL || window.location.origin;
+  const redirectUrl = `${baseUrl}/auth/callback?source=${source}`;
   const { error } = await supabase.auth.signInWithOAuth({
     provider,
     options: {
-      redirectTo: `${window.location.origin}/auth/callback?source=${source}`,
+      redirectTo: redirectUrl,
     },
   });
 

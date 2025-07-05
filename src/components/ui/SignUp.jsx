@@ -57,8 +57,8 @@ const SignUp = () => {
       ),
     profilePicture: z
       .instanceof(File)
-      .refine((file) => file.size < 5 * 1024 * 1024, {
-        message: "File size must be less than 5MB",
+      .refine((file) => file.size < 2 * 1024 * 1024, {
+        message: "File size must be less than 2MB",
       })
       .refine(
         (file) => ["image/jpeg", "image/png", "image/webp"].includes(file.type),
@@ -124,7 +124,7 @@ const SignUp = () => {
     if (data) {
       // Handle successful sign-up, e.g., redirect or show success message
       toast.success("Sign-up successful,Welcome aboard!🙏");
-      navigate(`/dashboard/${longUrl ? `?createNew=${longUrl}` : ""}`);
+      navigate(`/dashboard${longUrl ? `?createNew=${longUrl}` : ""}`);
       return;
     }
     if (error) {
@@ -140,9 +140,17 @@ const SignUp = () => {
 
   useEffect(() => {
     if (isAuthenticated) {
-      navigate(`/dashboard/${longUrl ? `?createNew=${longUrl}` : ""}`);
+      const redirectUrl = searchParams.get("redirect");
+      const longUrl = searchParams.get("createNew");
+      if (redirectUrl) {
+        navigate(decodeURIComponent(redirectUrl));
+      } else if (longUrl) {
+        navigate(`/dashboard${longUrl ? `?createNew=${longUrl}` : ""}`);
+      } else {
+        navigate("/dashboard");
+      }
     }
-  }, [isAuthenticated, navigate, longUrl]);
+  }, [isAuthenticated, navigate, searchParams]);
 
   return (
     <Card className={"w-full max-w-md border-gray-600"}>

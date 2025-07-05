@@ -98,8 +98,7 @@ const Login = () => {
     if (error == null && data) {
       // Handle successful login, e.g., redirect or show success message
       toast.success("Login successful,Welcome back!🙏");
-      navigate(`/dashboard/${longUrl ? `?createNew=${longUrl}` : ""}`);
-
+      navigate(`/dashboard${longUrl ? `?createNew=${longUrl}` : ""}`);
       return;
     }
     if (error) {
@@ -117,7 +116,7 @@ const Login = () => {
 
   useEffect(() => {
     if (isAuthenticated) {
-      navigate(`/dashboard/${longUrl ? `?createNew=${longUrl}` : ""}`);
+      navigate(`/dashboard${longUrl ? `?createNew=${longUrl}` : ""}`);
     }
   }, [isAuthenticated, navigate, longUrl]);
 

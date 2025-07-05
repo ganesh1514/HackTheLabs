@@ -4,6 +4,7 @@ import { toast } from "react-hot-toast";
 
 const AuthContext = createContext({});
 
+// eslint-disable-next-line react-refresh/only-export-components
 export const useAuth = () => {
   const context = useContext(AuthContext);
   if (!context) {
@@ -34,16 +35,16 @@ export const AuthProvider = ({ children }) => {
     const {
       data: { subscription },
     } = supabase.auth.onAuthStateChange(async (event, session) => {
-      console.log("Auth state changed:", event, session?.user?.email);
+      // console.log("Auth state changed:", event, session?.user?.email);
 
       setSession(session);
       setUser(session?.user || null);
       setLoading(false);
 
       if (event === "SIGNED_IN") {
-        console.log("User signed in:", session?.user?.email);
+        // console.log("User signed in:", session?.user?.email);
       } else if (event === "SIGNED_OUT") {
-        console.log("User signed out");
+        // console.log("User signed out");
         setUser(null);
         setSession(null);
       }
