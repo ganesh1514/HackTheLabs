@@ -17,6 +17,7 @@ import useFetch from "@/Hooks/useFetch";
 import { updatePassword } from "@/db/apiAuth";
 import supabase from "@/db/supabase";
 import toast from "react-hot-toast";
+import LoadingSpinner from "@/components/LoadingSpinner";
 
 const ResetPassword = () => {
   const [formData, setFormData] = useState({
@@ -106,14 +107,7 @@ const ResetPassword = () => {
   }, [data, navigate]);
 
   if (checkingSession) {
-    return (
-      <div className="flex items-center justify-center min-h-screen">
-        <div className="text-center">
-          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary-orange mx-auto"></div>
-          <p className="mt-2 text-white">Verifying reset link...</p>
-        </div>
-      </div>
-    );
+    return <LoadingSpinner message="Verifying reset link.." />;
   }
 
   if (!isValidSession) {

@@ -1,4 +1,5 @@
 import { useAuth } from "@/contexts/AuthContext";
+import LoadingSpinner from "../LoadingSpinner";
 import {
   Card,
   CardAction,
@@ -32,7 +33,7 @@ const Login = () => {
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
   const longUrl = searchParams.get("createNew");
-  const { isAuthenticated } = useAuth();
+  const { isAuthenticated, loading: authLoading } = useAuth();
 
   const formSchema = z.object({
     email: z
@@ -122,6 +123,9 @@ const Login = () => {
     }
   }, [isAuthenticated, navigate, longUrl]);
 
+  if (authLoading || loading || gLoading) {
+    return <LoadingSpinner message="Logging you in.." />;
+  }
   if (showForgotPassword) {
     return <ForgotPassword onBack={() => setShowForgotPassword(false)} />;
   }

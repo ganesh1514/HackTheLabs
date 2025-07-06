@@ -1,4 +1,5 @@
 import { useAuth } from "@/contexts/AuthContext";
+import LoadingSpinner from "../LoadingSpinner";
 import {
   Card,
   CardAction,
@@ -33,7 +34,7 @@ const SignUp = () => {
   const [searchParams] = useSearchParams();
   const longUrl = searchParams.get("createNew");
   const navigate = useNavigate();
-  const { isAuthenticated } = useAuth();
+  const { isAuthenticated, loading: authLoading } = useAuth();
 
   const formSchema = z.object({
     username: z
@@ -152,6 +153,10 @@ const SignUp = () => {
       }
     }
   }, [isAuthenticated, navigate, searchParams]);
+
+  if (authLoading || loading || gLoading) {
+    return <LoadingSpinner message="Creating your account..." />;
+  }
 
   return (
     <Card className={"w-full max-w-md  border-gray-600"}>

@@ -1,3 +1,4 @@
+import LoadingSpinner from "@/components/LoadingSpinner";
 import { useAuth } from "@/contexts/AuthContext";
 
 const Dashboard = () => {
@@ -5,11 +6,7 @@ const Dashboard = () => {
   const userProfile = getUserProfile();
 
   if (loading) {
-    return (
-      <div className="flex items-center justify-center min-h-screen">
-        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary-orange"></div>
-      </div>
-    );
+    return <LoadingSpinner message="loading dashboard" />;
   }
 
   return (
