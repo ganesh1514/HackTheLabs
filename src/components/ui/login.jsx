@@ -160,14 +160,15 @@ const Login = () => {
                   Forgot your password?
                 </button>
               </div>
-              <div className="relative">
+              <div className="relative flex items-center">
                 <Input
                   id="password"
                   type={showPassword ? "text" : "password"}
                   name="password"
                   value={formData.password}
                   onChange={handleChange}
-                  required
+                  placeholder="Enter your password"
+                  className="pr-10"
                 />
                 <button
                   type="button"

@@ -189,7 +189,7 @@ const SignUp = () => {
               {errors.email && <Error message={errors.email} />}
             </div>
             <div className="grid gap-2">
-              <div className="flex items-center">
+              <div className="flex">
                 <Label htmlFor="password">Password</Label>
               </div>
               <div className="relative">
@@ -199,6 +199,7 @@ const SignUp = () => {
                   name="password"
                   value={formData.password}
                   onChange={handleChange}
+                  className="pr-10"
                 />
                 <button
                   type="button"
@@ -211,8 +212,8 @@ const SignUp = () => {
                     <Eye className="h-4 w-4" />
                   )}
                 </button>
-                {errors.password && <Error message={errors.password} />}
               </div>
+              {errors.password && <Error message={errors.password} />}
               <div className="grid gap-2">
                 <Label htmlFor="profilePicture">Profile Picture</Label>
                 <Input
