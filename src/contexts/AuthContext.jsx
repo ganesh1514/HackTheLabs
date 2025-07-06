@@ -41,9 +41,10 @@ export const AuthProvider = ({ children }) => {
       setUser(session?.user || null);
       setLoading(false);
 
-      if (event === "SIGNED_IN") {
-        // console.log("User signed in:", session?.user?.email);
-      } else if (event === "SIGNED_OUT") {
+      // if (event === "SIGNED_IN") {
+      //   // console.log("User signed in:", session?.user?.email);
+      // } else
+      if (event === "SIGNED_OUT") {
         // console.log("User signed out");
         setUser(null);
         setSession(null);

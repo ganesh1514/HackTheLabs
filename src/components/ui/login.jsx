@@ -164,7 +164,7 @@ const Login = () => {
                   Forgot your password?
                 </button>
               </div>
-              <div className="relative flex items-center">
+              <div className="relative r">
                 <Input
                   id="password"
                   type={showPassword ? "text" : "password"}
