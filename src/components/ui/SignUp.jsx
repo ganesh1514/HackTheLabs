@@ -32,9 +32,11 @@ const SignUp = () => {
   const [errors, setErrors] = useState({});
   const [showPassword, setShowPassword] = useState(false);
   const [searchParams] = useSearchParams();
+  const [googleLoading, setGoogleLoading] = useState(false);
   const longUrl = searchParams.get("createNew");
+  const redirectUrl = searchParams.get("redirect");
   const navigate = useNavigate();
-  const { isAuthenticated, loading: authLoading } = useAuth();
+  const { isAuthenticated } = useAuth();
 
   const formSchema = z.object({
     username: z
@@ -72,19 +74,15 @@ const SignUp = () => {
   });
 
   //* Regular email/password sign-up
-  const {
-    data,
-    error,
-    loading,
-    fetchData: fnSignUp,
-  } = useFetch(signUp, formData);
+
+  const { loading, fetchData: fnSignUp } = useFetch(signUp, formData);
 
   //* Google Oauth sign-up
-  const {
-    error: gError,
-    loading: gLoading,
-    fetchData: fnGoogleSignUp,
-  } = useFetch(gLogin, { provider: "google", source: "signup" });
+  // const {
+  //   error: gError,
+  //   loading: gLoading,
+  //   fetchData: fnGoogleSignUp,
+  // } = useFetch(gLogin, { provider: "google", source: "signup" });
 
   const handleChange = (e) => {
     const { name, value, files } = e.target;
@@ -113,50 +111,29 @@ const SignUp = () => {
     await fnSignUp();
   };
 
-  const handleGoogleSignUp = async (e) => {
-    e.preventDefault();
+  const handleGoogleSignUp = async () => {
     // Call the fetchData function to initiate Google sign-up
+    setGoogleLoading(true);
     try {
-      await fnGoogleSignUp();
+      await gLogin({ provider: "google", source: "signup" });
     } catch (err) {
       toast.error(err.message);
+      setGoogleLoading(false);
     }
   };
-  useEffect(() => {
-    if (data) {
-      // Handle successful sign-up, e.g., redirect or show success message
-      toast.success("Sign-up successful,Welcome aboard!🙏");
-      navigate(`/dashboard${longUrl ? `?createNew=${longUrl}` : ""}`);
-      return;
-    }
-    if (error) {
-      // Handle error, e.g., show error message
-      toast.error(error.message);
-      return;
-    }
-    if (gError) {
-      toast.error(gError.message);
-      return;
-    }
-  }, [data, error, gError]);
 
+  // the block below is to handle the redirection after successful sign-up
   useEffect(() => {
     if (isAuthenticated) {
-      const redirectUrl = searchParams.get("redirect");
-      const longUrl = searchParams.get("createNew");
       if (redirectUrl) {
         navigate(decodeURIComponent(redirectUrl));
       } else if (longUrl) {
-        navigate(`/dashboard${longUrl ? `?createNew=${longUrl}` : ""}`);
+        navigate(`/dashboard?createNew=${longUrl}`);
       } else {
         navigate("/dashboard");
       }
     }
-  }, [isAuthenticated, navigate, searchParams]);
-
-  if (authLoading || loading || gLoading) {
-    return <LoadingSpinner message="Creating your account..." />;
-  }
+  }, [isAuthenticated, navigate, longUrl, redirectUrl]);
 
   return (
     <Card className={"w-full max-w-md  border-gray-600"}>
@@ -237,7 +214,11 @@ const SignUp = () => {
                 )}
               </div>
             </div>
-            <Button type="submit" className="w-full" disabled={loading}>
+            <Button
+              type="submit"
+              className="w-full"
+              disabled={loading || googleLoading}
+            >
               {loading ? (
                 <>
                   <Loader2 className="mr-2 h-4 w-4 animate-spin" />
@@ -253,9 +234,9 @@ const SignUp = () => {
           onClick={handleGoogleSignUp}
           variant="outline"
           className="mt-2 w-full"
-          disabled={gLoading}
+          disabled={googleLoading || loading}
         >
-          {gLoading ? (
+          {googleLoading ? (
             <>
               <Loader2 className="mr-2 h-4 w-4 animate-spin" />
               Signing up with Google...

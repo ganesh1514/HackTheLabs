@@ -51,7 +51,6 @@ const Dashboard = () => {
     return <LoadingSpinner message="loading dashboard" />;
   } else if (urlLoading || clicksLoading) {
     // Show loading spinner while fetching URLs and clicks
-
     return <LoadingSpinner message="loading links & clicks" />;
   }
 

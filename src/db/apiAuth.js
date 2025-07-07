@@ -16,8 +16,6 @@ export const gLogin = async ({ provider, source = "login" }) => {
     toast.error(error.message);
     return;
   }
-
-  return null;
 };
 export const login = async ({ email, password }) => {
   const { data, error } = await supabase.auth.signInWithPassword({

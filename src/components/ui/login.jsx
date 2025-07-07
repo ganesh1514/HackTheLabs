@@ -32,8 +32,10 @@ const Login = () => {
   const [showForgotPassword, setShowForgotPassword] = useState(false);
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
+  const redirectTo = searchParams.get("redirect") || "/dashboard";
   const longUrl = searchParams.get("createNew");
   const { isAuthenticated, loading: authLoading } = useAuth();
+  const [googleLoading, setGoogleLoading] = useState(false);
 
   const formSchema = z.object({
     email: z
@@ -55,19 +57,14 @@ const Login = () => {
   };
 
   //* Regular email/password login
-  const {
-    data,
-    error,
-    loading,
-    fetchData: fnLogin,
-  } = useFetch(login, formData);
+  const { loading, fetchData: fnLogin } = useFetch(login, formData);
 
   //* Google Oauth login
-  const {
-    error: gError,
-    loading: gLoading,
-    fetchData: fnGoogleLogin,
-  } = useFetch(gLogin, { provider: "google", source: "login" });
+  // const {
+  //   error: gError,
+  //   loading: gLoading,
+  //   fetchData: fnGoogleLogin,
+  // } = useFetch(gLogin, { provider: "google", source: "login" });
 
   const handleLogin = async (e) => {
     e.preventDefault();
@@ -84,48 +81,40 @@ const Login = () => {
     // Proceed with login logic
     setErrors({}); // Clear previous errors
 
-    await fnLogin();
-  };
-
-  const handleGoogleLogin = async (e) => {
-    e.preventDefault();
-    // Call the fetchData function to initiate Google login
     try {
-      await fnGoogleLogin();
+      await fnLogin();
     } catch (err) {
       toast.error(err.message);
+      return;
     }
   };
 
-  useEffect(() => {
-    if (error == null && data) {
-      // Handle successful login, e.g., redirect or show success message
-      toast.success("Login successful,Welcome back!🙏");
-      navigate(`/dashboard${longUrl ? `?createNew=${longUrl}` : ""}`);
-      return;
+  const handleGoogleLogin = async () => {
+    setGoogleLoading(true);
+    // Call the gLogin function to initiate Google login
+    try {
+      await gLogin({ provider: "google", source: "login" });
+    } catch (err) {
+      toast.error(err.message);
+      setGoogleLoading(false);
     }
-    if (error) {
-      // Handle error, e.g., show error message
-      toast.error(error.message);
-      return;
-    }
+  };
 
-    if (gError) {
-      // Handle Google OAuth error
-      toast.error(gError.message);
-      return;
-    }
-  }, [data, error, gError]);
-
+  // the below block is used to handle the redirection after login
   useEffect(() => {
     if (isAuthenticated) {
-      navigate(`/dashboard${longUrl ? `?createNew=${longUrl}` : ""}`);
+      if (redirectTo && redirectTo !== "/dashboard") {
+        navigate(decodeURIComponent(redirectTo));
+      }
+      // If longUrl is present, redirect to dashboard with longUrl as query param
+      else if (longUrl) {
+        navigate(`/dashboard?createNew=${longUrl}`);
+      } else {
+        navigate("/dashboard");
+      }
     }
-  }, [isAuthenticated, navigate, longUrl]);
+  }, [isAuthenticated, navigate, longUrl, redirectTo]);
 
-  if (authLoading || loading || gLoading) {
-    return <LoadingSpinner message="Logging you in.." />;
-  }
   if (showForgotPassword) {
     return <ForgotPassword onBack={() => setShowForgotPassword(false)} />;
   }
@@ -188,7 +177,11 @@ const Login = () => {
               </div>
               {errors.password && <Error message={errors.password} />}
             </div>
-            <Button type="submit" className="w-full" disabled={loading}>
+            <Button
+              type="submit"
+              className="w-full"
+              disabled={loading || authLoading || googleLoading}
+            >
               {loading ? (
                 <>
                   <Loader2 className="mr-2 h-4 w-4 animate-spin" />
@@ -204,9 +197,9 @@ const Login = () => {
           onClick={handleGoogleLogin}
           variant="outline"
           className="mt-3 w-full"
-          disabled={gLoading}
+          disabled={googleLoading || authLoading || loading}
         >
-          {gLoading ? (
+          {googleLoading ? (
             <>
               <Loader2 className="mr-2 h-4 w-4 animate-spin" />
               Logging in with Google...

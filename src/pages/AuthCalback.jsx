@@ -9,6 +9,7 @@ const AuthCallback = () => {
   const [searchParams] = useSearchParams();
   const longUrl = searchParams.get("createNew");
   const source = searchParams.get("source");
+  const redirectTo = searchParams.get("redirect");
 
   useEffect(() => {
     const getSession = async () => {
@@ -47,20 +48,32 @@ const AuthCallback = () => {
           return;
         }
 
+        const userName =
+          user.user_metadata?.username ||
+          user.user_metadata?.full_name ||
+          user.user_metadata?.name ||
+          user.email?.split("@")[0] ||
+          "";
         //* show appropriate success message
         if (isNewUser) {
-          toast.success("Account Created Successfully, Welcome!🙏");
+          toast.success(
+            `Account Created Successfully, Welcome! ${userName} 🙏`
+          );
         } else {
-          toast.success("Logged in Successfully, Welcome back!🙏");
+          toast.success(`Logged in Successfully, Welcome back! ${userName} 🙏`);
         }
-        navigate(`/dashboard${longUrl ? `?createNew=${longUrl}` : ""}`);
+        if (redirectTo) {
+          navigate(decodeURIComponent(redirectTo));
+        } else {
+          navigate(`/dashboard${longUrl ? `?createNew=${longUrl}` : ""}`);
+        }
       } else {
         toast.error("No active session found. Please log in.");
         navigate("/auth");
       }
     };
     getSession();
-  }, [navigate, longUrl, source]);
+  }, [navigate, longUrl, source, redirectTo]);
   return <LoadingSpinner message="Completing authentication..." />;
 };
 export default AuthCallback;
