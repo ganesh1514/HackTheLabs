@@ -22,7 +22,7 @@ import toast from "react-hot-toast";
 import ForgotPassword from "./ForgotPassword";
 
 import { useNavigate, useSearchParams } from "react-router-dom";
-const Login = () => {
+const Login = ({ onSwitchToSignUp }) => {
   const [formData, setFormData] = useState({
     email: "",
     password: "",
@@ -32,7 +32,6 @@ const Login = () => {
   const [showForgotPassword, setShowForgotPassword] = useState(false);
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
-  const redirectTo = searchParams.get("redirect") || "/dashboard";
   const longUrl = searchParams.get("createNew");
   const { isAuthenticated, loading: authLoading } = useAuth();
   const [googleLoading, setGoogleLoading] = useState(false);
@@ -57,7 +56,11 @@ const Login = () => {
   };
 
   //* Regular email/password login
-  const { loading, fetchData: fnLogin } = useFetch(login, formData);
+  const {
+    loading,
+    data: loginData,
+    fetchData: fnLogin,
+  } = useFetch(login, formData);
 
   //* Google Oauth login
   // const {
@@ -93,27 +96,36 @@ const Login = () => {
     setGoogleLoading(true);
     // Call the gLogin function to initiate Google login
     try {
-      await gLogin({ provider: "google", source: "login" });
+      await gLogin({
+        provider: "google",
+        source: "login",
+      });
     } catch (err) {
       toast.error(err.message);
       setGoogleLoading(false);
     }
   };
-
-  // the below block is used to handle the redirection after login
+  useEffect(() => {
+    if (loginData) {
+      toast.success(
+        `Login successful! Welcome back ${
+          loginData?.user?.user_metadata?.username || ""
+        } 🙏`
+      );
+    }
+    return;
+  }, [loading, loginData]);
+  // the below block is used to handle the redirection after login using google
   useEffect(() => {
     if (isAuthenticated) {
-      if (redirectTo && redirectTo !== "/dashboard") {
-        navigate(decodeURIComponent(redirectTo));
-      }
       // If longUrl is present, redirect to dashboard with longUrl as query param
-      else if (longUrl) {
+      if (longUrl) {
         navigate(`/dashboard?createNew=${longUrl}`);
       } else {
         navigate("/dashboard");
       }
     }
-  }, [isAuthenticated, navigate, longUrl, redirectTo]);
+  }, [isAuthenticated, navigate, longUrl]);
 
   if (showForgotPassword) {
     return <ForgotPassword onBack={() => setShowForgotPassword(false)} />;
@@ -218,7 +230,16 @@ const Login = () => {
         </Button>
       </CardContent>
       <CardFooter className="flex-col gap-2">
-        <p>Don't Have an account? Go to Sign Up tab.</p>
+        <p>
+          Don't Have an account?{" "}
+          <button
+            type="button"
+            className="text-primary-orange hover:text-primary-orange-shade underline underline-offset-4 font-medium transition-colors"
+            onClick={onSwitchToSignUp}
+          >
+            Go to Sign Up tab
+          </button>
+        </p>
       </CardFooter>
     </Card>
   );

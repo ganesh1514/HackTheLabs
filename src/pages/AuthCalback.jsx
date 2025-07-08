@@ -37,15 +37,24 @@ const AuthCallback = () => {
           await supabase.auth.signOut();
           navigate("/auth");
           return;
-        }
-
-        if (source === "signup" && !isNewUser) {
+        } else if (source === "signup" && !isNewUser) {
           //* user click "sign up with google" but is actually an existing user
           toast.error(
             "Account already exists, You have been logged in instead."
           );
-          navigate(`/dashboard${longUrl ? `?createNew=${longUrl}` : ""}`);
-          return;
+          if (redirectTo) {
+            navigate(redirectTo, { replace: true });
+            return;
+          }
+          if (longUrl) {
+            navigate(`/dashboard?createNew=${encodeURIComponent(longUrl)}`, {
+              replace: true,
+            });
+            return;
+          } else {
+            navigate("/dashboard", { replace: true });
+            return;
+          }
         }
 
         const userName =
@@ -63,9 +72,17 @@ const AuthCallback = () => {
           toast.success(`Logged in Successfully, Welcome back! ${userName} 🙏`);
         }
         if (redirectTo) {
-          navigate(decodeURIComponent(redirectTo));
+          navigate(redirectTo, { replace: true });
+          return;
+        }
+        if (longUrl) {
+          navigate(`/dashboard?createNew=${encodeURIComponent(longUrl)}`, {
+            replace: true,
+          });
+          return;
         } else {
-          navigate(`/dashboard${longUrl ? `?createNew=${longUrl}` : ""}`);
+          navigate(`/dashboard`, { replace: true });
+          return;
         }
       } else {
         toast.error("No active session found. Please log in.");

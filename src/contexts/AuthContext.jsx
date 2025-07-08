@@ -61,10 +61,7 @@ export const AuthProvider = ({ children }) => {
     try {
       setLoading(true);
       const { error } = await supabase.auth.signOut();
-      if (error) {
-        toast.error("Error signing out");
-        return;
-      }
+      if (error) throw error;
       toast.success("Logged out successfully");
     } catch (error) {
       toast.error(error.message || "Error signing out");

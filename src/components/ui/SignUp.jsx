@@ -22,7 +22,7 @@ import Error from "./Error";
 
 import { useNavigate, useSearchParams } from "react-router-dom";
 
-const SignUp = () => {
+const SignUp = ({ onSwitchToLogin }) => {
   const [formData, setFormData] = useState({
     username: "",
     email: "",
@@ -34,7 +34,7 @@ const SignUp = () => {
   const [searchParams] = useSearchParams();
   const [googleLoading, setGoogleLoading] = useState(false);
   const longUrl = searchParams.get("createNew");
-  const redirectUrl = searchParams.get("redirect");
+
   const navigate = useNavigate();
   const { isAuthenticated } = useAuth();
 
@@ -73,9 +73,13 @@ const SignUp = () => {
       .optional(),
   });
 
-  //* Regular email/password sign-up
+  //* regular signup
 
-  const { loading, fetchData: fnSignUp } = useFetch(signUp, formData);
+  const {
+    loading,
+    data: signUpData,
+    fetchData: fnSignUp,
+  } = useFetch(signUp, formData);
 
   //* Google Oauth sign-up
   // const {
@@ -122,18 +126,27 @@ const SignUp = () => {
     }
   };
 
-  // the block below is to handle the redirection after successful sign-up
+  //* the below useFetch will monitor the signup using email
+  useEffect(() => {
+    if (signUpData) {
+      toast.success(
+        `signUp successful! Welcome ${
+          signUpData?.user?.user_metadata?.username || ""
+        } 🙏`
+      );
+    }
+  }, [loading, signUpData]);
+
+  // the block below is to handle the redirection after successful sign-up using oAuth
   useEffect(() => {
     if (isAuthenticated) {
-      if (redirectUrl) {
-        navigate(decodeURIComponent(redirectUrl));
-      } else if (longUrl) {
+      if (longUrl) {
         navigate(`/dashboard?createNew=${longUrl}`);
       } else {
         navigate("/dashboard");
       }
     }
-  }, [isAuthenticated, navigate, longUrl, redirectUrl]);
+  }, [isAuthenticated, navigate, longUrl]);
 
   return (
     <Card className={"w-full max-w-md  border-gray-600"}>
@@ -255,7 +268,16 @@ const SignUp = () => {
         </Button>
       </CardContent>
       <CardFooter>
-        <p>Already Have an account? Go to Login tab.</p>
+        <p>
+          Already Have an account?{" "}
+          <button
+            type="button"
+            className="text-primary-orange hover:text-primary-orange-shade underline underline-offset-4 font-medium transition-colors"
+            onClick={onSwitchToLogin}
+          >
+            Go to Login tab
+          </button>
+        </p>
       </CardFooter>
     </Card>
   );
