@@ -9,7 +9,7 @@ const Auth = () => {
   return (
     <div className="mt-10 flex flex-col items-center gap-15">
       <h1 className="text-2xl sm:text-4xl font-bold">
-        {searchParams.get("createNew") ? (
+        {searchParams.get("createNew") || searchParams.get("redirect") ? (
           <>
             <span className="rounded-sm px-2 py-1 bg-gradient-to-r from-primary-orange-tint via-primary-orange to-primary-orange-shade">
               Hold Up!

@@ -40,7 +40,8 @@ const SignUp = ({ onSwitchToLogin }) => {
 
   const formSchema = z.object({
     username: z
-      .string({ required_error: "Username is required" })
+      .string()
+      .nonempty("Username is required")
       .min(3, "Username must be at least 3 characters long")
       .max(20, "Username must be at most 20 characters long")
       .regex(
@@ -48,11 +49,12 @@ const SignUp = ({ onSwitchToLogin }) => {
         "Username can only contain letters, numbers, and underscores"
       ),
     email: z
-      .string({ required_error: "Email is required" })
+      .string()
+      .nonempty("Email is required")
       .email("Please enter a valid email"),
     password: z
-      .string({ required_error: "Password is required" })
-
+      .string()
+      .nonempty("Password is required")
       .min(8, "Password must be at least 8 characters long")
       .regex(
         /^(?=.*[A-Z])(?=.*[0-9])(?=.*[^A-Za-z0-9])/,
@@ -105,7 +107,10 @@ const SignUp = ({ onSwitchToLogin }) => {
       // Handle validation errors
       const fieldErrors = {};
       result.error.errors.forEach((error) => {
-        fieldErrors[error.path[0]] = error.message;
+        if (!fieldErrors[error.path[0]]) {
+          // Only set the error for the first occurrence of the field
+          fieldErrors[error.path[0]] = error.message;
+        }
       });
       setErrors(fieldErrors);
       return;

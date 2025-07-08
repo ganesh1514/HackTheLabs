@@ -57,11 +57,10 @@ const Header = () => {
             </DropdownMenuTrigger>
             <DropdownMenuContent>
               <DropdownMenuLabel>
-                {userProfile?.username ||
-                  userProfile?.name ||
-                  userProfile?.email ||
-                  "User"}
+                {userProfile?.username || userProfile?.name || "User"}
               </DropdownMenuLabel>
+              <DropdownMenuSeparator />
+              <DropdownMenuLabel>{userProfile?.email || ""}</DropdownMenuLabel>
               <DropdownMenuSeparator />
               <DropdownMenuItem onClick={() => navigate("/dashboard")}>
                 <LinkIcon className="mr-2 w-4 h-4" />

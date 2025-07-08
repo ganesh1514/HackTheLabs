@@ -14,7 +14,6 @@ export async function getClicks(urlIds) {
     }
 
     if (!data || data.length === 0) {
-      toast.error("No clicks found for this user.");
       return [];
     }
     return data;

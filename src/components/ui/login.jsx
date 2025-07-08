@@ -1,5 +1,5 @@
 import { useAuth } from "@/contexts/AuthContext";
-import LoadingSpinner from "../LoadingSpinner";
+
 import {
   Card,
   CardAction,
@@ -38,10 +38,12 @@ const Login = ({ onSwitchToSignUp }) => {
 
   const formSchema = z.object({
     email: z
-      .string({ required_error: "Email is required" })
+      .string()
+      .nonempty("Email is required")
       .email("Please enter a valid email"),
     password: z
-      .string({ required_error: "Password is required" })
+      .string()
+      .nonempty("Password is required")
       .min(8, "Password must be at least 8 characters long")
       .regex(
         /^(?=.*[A-Z])(?=.*[0-9])(?=.*[^A-Za-z0-9])/,
@@ -76,7 +78,9 @@ const Login = ({ onSwitchToSignUp }) => {
       // Handle validation errors
       const fieldErrors = {};
       result.error.errors.forEach((error) => {
-        fieldErrors[error.path[0]] = error.message;
+        if (!fieldErrors[error.path[0]]) {
+          fieldErrors[error.path[0]] = error.message;
+        }
       });
       setErrors(fieldErrors);
       return;
