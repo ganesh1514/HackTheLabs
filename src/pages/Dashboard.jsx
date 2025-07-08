@@ -1,6 +1,7 @@
 import LoadingSpinner from "@/components/LoadingSpinner";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import CreateNewLink from "@/components/ui/CreateNewLink";
 import Error from "@/components/ui/Error";
 import { Input } from "@/components/ui/input";
 import LinkCard from "@/components/ui/LinkCard";
@@ -80,7 +81,7 @@ const Dashboard = () => {
       </div>
       <div className="flex justify-between">
         <h1 className="text-4xl font-semibold">My Links</h1>
-        <Button>Create Link</Button>
+        <CreateNewLink fnUrls={fnUrls} />
       </div>
       <div className="relative group">
         <div className="relative">
@@ -97,9 +98,7 @@ const Dashboard = () => {
       </div>
       {urlError && <Error message={urlError?.message} />}
       {(filteredUrls || []).map((url, idx) => {
-        return (
-          <LinkCard key={idx} url={url} fnUrls={fnUrls} fnClick={fnClicks} />
-        );
+        return <LinkCard key={idx} url={url} fnUrls={fnUrls} />;
       })}
     </div>
   );

@@ -1,53 +1,45 @@
-import { deleteUrl } from "@/db/apiUrls";
-import useFetch from "@/Hooks/useFetch";
 import { Copy, Download, Trash } from "lucide-react";
 import toast from "react-hot-toast";
 import { Link } from "react-router-dom";
-import { useState } from "react"; // ADD THIS IMPORT
 
-import {
-  AlertDialog,
-  AlertDialogAction,
-  AlertDialogCancel,
-  AlertDialogContent,
-  AlertDialogDescription,
-  AlertDialogFooter,
-  AlertDialogHeader,
-  AlertDialogTitle,
-  AlertDialogTrigger,
-} from "@/components/ui/alert-dialog";
 import { Button } from "@/components/ui/button";
+import DeleteUrl from "./DeleteUrl";
 
 const LinkCard = ({ url, fnUrls }) => {
-  const [showDeleteDialog, setShowDeleteDialog] = useState(false); // ADD THIS STATE
+  // ADD THIS STATE
 
-  const downloadImage = () => {
-    const imgUrl = url?.qr;
-    const fileName = url?.title;
+  const downloadImage = async () => {
+    try {
+      const imgUrl = url?.qr;
+      const fileName = `${url?.title || "qr-code"}.jpeg`;
 
-    const anchor = document.createElement("a");
-    anchor.href = imgUrl;
-    anchor.download = `${fileName}.png`; // ADD .png extension
+      // Fetch the image as a blob to bypass CORS
+      const response = await fetch(imgUrl);
+      if (!response.ok) throw new Error("Failed to fetch image");
 
-    document.body.appendChild(anchor);
-    anchor.click();
-    document.body.removeChild(anchor);
-  };
+      const blob = await response.blob();
 
-  const { loading: deleteLoading, fetchData: fnDeleteUrl } = useFetch(
-    // CHANGE: fetchData to fn
-    deleteUrl,
-    url?.id
-  );
+      // Create a blob URL
+      const blobUrl = window.URL.createObjectURL(blob);
 
-  // REMOVE the old handleDelete function and REPLACE with this:
-  const handleDeleteConfirm = async () => {
-    if (deleteLoading) return;
+      // Create and trigger download
+      const anchor = document.createElement("a");
+      anchor.href = blobUrl;
+      anchor.download = fileName;
+      anchor.style.display = "none";
 
-    await fnDeleteUrl();
-    toast.success("URL deleted successfully");
-    fnUrls(); // Refresh the URL list
-    setShowDeleteDialog(false); // Close dialog
+      document.body.appendChild(anchor);
+      anchor.click();
+      document.body.removeChild(anchor);
+
+      // Clean up the blob URL
+      window.URL.revokeObjectURL(blobUrl);
+
+      toast.success("Initiated download of QR code");
+    } catch (error) {
+      console.error("Download failed:", error);
+      toast.error("Failed to download QR code");
+    }
   };
 
   return (
@@ -80,7 +72,7 @@ const LinkCard = ({ url, fnUrls }) => {
           variant="ghost"
           onClick={() => {
             navigator.clipboard.writeText(
-              `https://LabUrl.in/${url?.short_url || url?.custom_url}`
+              `https://laburl.in/${url?.custom_url || url?.short_url}`
             );
             toast.success("Link copied to clipboard");
           }}
@@ -96,39 +88,8 @@ const LinkCard = ({ url, fnUrls }) => {
         >
           <Download />
         </Button>
-
+        <DeleteUrl url={url} fnUrls={fnUrls} />
         {/* REPLACE the old Trash button with this AlertDialog */}
-        <AlertDialog open={showDeleteDialog} onOpenChange={setShowDeleteDialog}>
-          <AlertDialogTrigger asChild>
-            <Button
-              variant="ghost"
-              className="hover:bg-gray-400 cursor-pointer"
-            >
-              <Trash />
-            </Button>
-          </AlertDialogTrigger>
-          <AlertDialogContent>
-            <AlertDialogHeader>
-              <AlertDialogTitle>Are you absolutely sure?</AlertDialogTitle>
-              <AlertDialogDescription>
-                This action cannot be undone. This will permanently delete the
-                URL "{url?.title}" and remove all its data including analytics.
-              </AlertDialogDescription>
-            </AlertDialogHeader>
-            <AlertDialogFooter>
-              <AlertDialogCancel disabled={deleteLoading}>
-                Cancel
-              </AlertDialogCancel>
-              <AlertDialogAction
-                onClick={handleDeleteConfirm}
-                disabled={deleteLoading}
-                className="bg-red-600 hover:bg-red-700 focus:ring-red-500"
-              >
-                {deleteLoading ? "Deleting..." : "Delete URL"}
-              </AlertDialogAction>
-            </AlertDialogFooter>
-          </AlertDialogContent>
-        </AlertDialog>
       </div>
     </div>
   );

@@ -85,8 +85,8 @@ const Login = ({ onSwitchToSignUp }) => {
       setErrors(fieldErrors);
       return;
     }
-    // Proceed with login logic
     setErrors({}); // Clear previous errors
+    // Proceed with login logic
 
     try {
       await fnLogin();
