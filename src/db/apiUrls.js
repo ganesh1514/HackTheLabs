@@ -1,5 +1,7 @@
 import toast from "react-hot-toast";
 import supabase from "./supabase";
+import { UAParser } from "ua-parser-js";
+import axios from "axios";
 
 export async function getUrls(user_id) {
   try {
@@ -93,3 +95,49 @@ export async function createUrl(
     return null;
   }
 }
+
+export async function getLongUrl({ url_id: id }) {
+  try {
+    const { data, error } = await supabase
+      .from("urls")
+      .select("id, original_url")
+      .or(`short_url.eq.${id}, custom_url.eq.${id}`)
+      .single();
+    if (error) {
+      toast.error("The URL does not exist, Redirecting to home page");
+      setTimeout(() => {
+        window.location.href = "/";
+      }, 1000);
+      return null;
+    }
+    return data;
+  } catch (error) {
+    toast.error("The URL does not exist, Redirecting to home page");
+    setTimeout(() => {
+      window.location.href = "/";
+    }, 1000);
+    return null;
+  }
+}
+
+const parser = new UAParser();
+export const storeClicks = async ({ id: urlId, originalUrl: longUrl }) => {
+  try {
+    const res = parser.getResult();
+    const { city, country_name: country } = (
+      await axios.get("https://ipapi.co/json/")
+    ).data;
+    // console.log("Location data:", { city, country });
+    await supabase.from("clicks").insert({
+      url_id: urlId,
+      city: city,
+      country: country,
+      device: res.device.type || "desktop",
+    });
+    window.location.href = longUrl;
+    toast.success("Redirecting to the original URL...");
+  } catch (error) {
+    // toast.error("Error storing clicks: " + error.message);
+    toast.error("error recording clicks: " + error);
+  }
+};
