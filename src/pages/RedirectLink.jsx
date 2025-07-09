@@ -1,5 +1,6 @@
 import LoadingSpinner from "@/components/LoadingSpinner";
-import { getLongUrl, storeClicks } from "@/db/apiUrls";
+import { getLongUrl } from "@/db/apiUrls";
+import { storeClicks } from "@/db/apiClicks";
 import useFetch from "@/Hooks/useFetch";
 import { useEffect } from "react";
 import { useParams } from "react-router-dom";

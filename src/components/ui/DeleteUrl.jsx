@@ -15,9 +15,11 @@ import {
 import { Button } from "@/components/ui/button";
 import { Trash } from "lucide-react";
 import toast from "react-hot-toast";
+import { useNavigate } from "react-router-dom";
 
-const DeleteUrl = ({ url, fnUrls = () => {} }) => {
+const DeleteUrl = ({ url, fnUrls }) => {
   const [showDeleteDialog, setShowDeleteDialog] = useState(false);
+  const navigate = useNavigate();
   const { loading: deleteLoading, fetchData: fnDeleteUrl } = useFetch(
     deleteUrl,
     url?.id
@@ -31,6 +33,8 @@ const DeleteUrl = ({ url, fnUrls = () => {} }) => {
     setShowDeleteDialog(false); // Manually close the dialog
     if (fnUrls) {
       fnUrls(); // Refresh the URL list
+    } else {
+      navigate("/dashboard"); // Fallback to redirect if fnUrls is not provided
     }
   };
   // REMOVE the old handleDelete function and REPLACE with this:
@@ -38,7 +42,10 @@ const DeleteUrl = ({ url, fnUrls = () => {} }) => {
     <>
       <AlertDialog open={showDeleteDialog} onOpenChange={setShowDeleteDialog}>
         <AlertDialogTrigger asChild>
-          <Button variant="ghost" className="hover:bg-gray-400 cursor-pointer">
+          <Button
+            variant="ghost"
+            className="hover:bg-primary-orange hover:text-white cursor-pointer"
+          >
             <Trash />
           </Button>
         </AlertDialogTrigger>

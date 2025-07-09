@@ -1,4 +1,5 @@
 import { Copy, Download, Trash } from "lucide-react";
+import { downloadQr } from "@/lib/downloadQr";
 import toast from "react-hot-toast";
 import { Link } from "react-router-dom";
 
@@ -8,65 +9,39 @@ import DeleteUrl from "./DeleteUrl";
 const LinkCard = ({ url, fnUrls }) => {
   // ADD THIS STATE
 
-  const downloadImage = async () => {
-    try {
-      const imgUrl = url?.qr;
-      const fileName = `${url?.title || "qr-code"}.jpeg`;
-
-      // Fetch the image as a blob to bypass CORS
-      const response = await fetch(imgUrl);
-      if (!response.ok) throw new Error("Failed to fetch image");
-
-      const blob = await response.blob();
-
-      // Create a blob URL
-      const blobUrl = window.URL.createObjectURL(blob);
-
-      // Create and trigger download
-      const anchor = document.createElement("a");
-      anchor.href = blobUrl;
-      anchor.download = fileName;
-      anchor.style.display = "none";
-
-      document.body.appendChild(anchor);
-      anchor.click();
-      document.body.removeChild(anchor);
-
-      // Clean up the blob URL
-      window.URL.revokeObjectURL(blobUrl);
-
-      toast.success("Initiated download of QR code");
-    } catch (error) {
-      console.error("Download failed:", error);
-      toast.error("Failed to download QR code");
-    }
+  const handleDownload = (url) => {
+    downloadQr({ url });
   };
 
   return (
-    <div className="flex flex-col md:flex-row gap-5 border p-4 bg-gray-900 rounded-lg">
-      <img
-        src={url?.qr}
-        alt="qr code"
-        className="h-32 object-contain ring ring-blue-500 self-start"
-      />
-      <Link to={`/link/${url?.id}`} className="flex flex-col flex-1">
-        <span className="text-3xl font-semibold hover:underline cursor-pointer">
+    <div className="flex flex-col  md:flex-row gap-5 border p-4 bg-gray-900 rounded-lg">
+      <div className="flex-shrink-0">
+        <img
+          src={url?.qr}
+          alt="qr code"
+          className="h-32 object-contain ring ring-blue-500 p-1 self-start rounded-lg"
+        />
+      </div>
+
+      <Link to={`/link/${url?.id}`} className="flex flex-col  gap-2 flex-1">
+        <span className="text-2xl md:text-3xl font-semibold hover:underline cursor-pointer break-words">
           {url?.title}
         </span>
-        <span className="text-2xl text-blue-400 font-semibold hover:underline cursor-pointer">
+        <span className="text-lg md:text-2xl text-blue-400 font-semibold hover:underline cursor-pointer break-all">
           {`${import.meta.env.VITE_SITE_URL}/${
             url?.custom_url ? url?.custom_url : url?.short_url
           }`}
         </span>
-        <span className="flex items-center gap-1 hover:underline cursor-pointer">
+        <span className="flex items-center gap-1 hover:underline cursor-pointer text-gray-300 break-all text-sm md:text-base">
           {url?.original_url}
         </span>
-        <span className="flex items-end font-semibold text-sm flex-1">
+        <span className="text-xs md:text-sm font-semibold text-gray-400 mt-auto">
           {new Date(url?.created_at).toLocaleDateString() +
             " " +
             new Date(url?.created_at).toLocaleTimeString()}
         </span>
       </Link>
+
       <div className="flex gap-2">
         <Button
           variant="ghost"
@@ -76,15 +51,15 @@ const LinkCard = ({ url, fnUrls }) => {
             );
             toast.success("Link copied to clipboard");
           }}
-          className="hover:bg-gray-400 cursor-pointer"
+          className="hover:bg-primary-orange hover:text-white cursor-pointer"
         >
           <Copy />
         </Button>
 
         <Button
           variant="ghost"
-          className="hover:bg-gray-400 cursor-pointer"
-          onClick={downloadImage}
+          className="hover:bg-primary-orange hover:text-white cursor-pointer"
+          onClick={handleDownload}
         >
           <Download />
         </Button>

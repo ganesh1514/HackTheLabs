@@ -1,7 +1,5 @@
 import toast from "react-hot-toast";
 import supabase from "./supabase";
-import { UAParser } from "ua-parser-js";
-import axios from "axios";
 
 export async function getUrls(user_id) {
   try {
@@ -19,6 +17,27 @@ export async function getUrls(user_id) {
   } catch (networkError) {
     toast.error("Network error: " + networkError.message);
     return [];
+  }
+}
+
+export async function getSpecificUrl({ id: urlId, userId: user_id }) {
+  try {
+    const { data, error } = await supabase
+      .from("urls")
+      .select("*")
+      .eq("id", urlId)
+      .eq("user_id", user_id)
+      .single();
+
+    if (error) {
+      toast.error("Short URL not found: " + error.message);
+      return null;
+    }
+
+    return data;
+  } catch (error) {
+    toast.error("Error fetching URL: " + error.message);
+    return null;
   }
 }
 
@@ -119,25 +138,3 @@ export async function getLongUrl({ url_id: id }) {
     return null;
   }
 }
-
-const parser = new UAParser();
-export const storeClicks = async ({ id: urlId, originalUrl: longUrl }) => {
-  try {
-    const res = parser.getResult();
-    const { city, country_name: country } = (
-      await axios.get("https://ipapi.co/json/")
-    ).data;
-    // console.log("Location data:", { city, country });
-    await supabase.from("clicks").insert({
-      url_id: urlId,
-      city: city,
-      country: country,
-      device: res.device.type || "desktop",
-    });
-    window.location.href = longUrl;
-    toast.success("Redirecting to the original URL...");
-  } catch (error) {
-    // toast.error("Error storing clicks: " + error.message);
-    toast.error("error recording clicks: " + error);
-  }
-};
