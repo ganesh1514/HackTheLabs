@@ -20,7 +20,7 @@ const DeviceStats = ({ stats }) => {
   return (
     <Card>
       <CardHeader>
-        <CardTitle>City Statistics</CardTitle>
+        <CardTitle>Device Statistics</CardTitle>
       </CardHeader>
       <CardContent>
         <ChartContainer config={deviceCnt} className="min-h-[200px] w-full">
@@ -38,6 +38,7 @@ const DeviceStats = ({ stats }) => {
                 }
                 dataKey="count"
                 nameKey="device"
+                innerRadius={60}
               >
                 {data.map((_, index) => (
                   <Cell
