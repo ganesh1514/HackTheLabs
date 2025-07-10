@@ -142,7 +142,7 @@ export const updatePassword = async ({ password }) => {
       return null;
     }
 
-    toast.success("Password updated successfully!");
+
     return true;
   } catch (err) {
     toast.error("Error while updating the password: " + err.message);
