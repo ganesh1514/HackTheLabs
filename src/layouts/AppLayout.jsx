@@ -10,7 +10,7 @@ const AppLayout = () => {
         <Outlet />
       </main>
       <footer className="p-10 text-center bg-gray-800 mt-10">
-        <p>Made with 💖 by Biradar Ganesh</p>
+        <p>Made with 💖 by <a href="https://github.com/ganesh1514" className = "hover:underline-primary-orange hover:underline-offset-4">Biradar Ganesh</a></p>
       </footer>
       <Toaster position="top-center" />
     </div>
