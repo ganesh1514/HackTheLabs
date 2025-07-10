@@ -68,13 +68,13 @@ const Link = () => {
               {linkData?.title}
             </span>
             <a
-              href={`https://laburl.in/${
+              href={`https://laburl.vercel.app/${
                 linkData?.custom_url || linkData?.short_url
               }`}
               target="_blank"
               className="text-2xl sm:text-3xl text-blue-400 font-semibold hover:underline cursor-pointer break-all"
             >
-              {`https://laburl.in/${
+              {`https://laburl.vercel.app/${
                 linkData?.custom_url || linkData?.short_url
               }`}
             </a>
