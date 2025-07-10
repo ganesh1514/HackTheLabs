@@ -47,7 +47,7 @@ const LinkCard = ({ url, fnUrls }) => {
           variant="ghost"
           onClick={() => {
             navigator.clipboard.writeText(
-              `https://laburl.in/${url?.custom_url || url?.short_url}`
+              `https://laburl.vercel.app/${url?.custom_url || url?.short_url}`
             );
             toast.success("Link copied to clipboard");
           }}

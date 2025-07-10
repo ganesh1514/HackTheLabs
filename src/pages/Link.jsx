@@ -96,7 +96,7 @@ const Link = () => {
                 variant="ghost"
                 onClick={() => {
                   navigator.clipboard.writeText(
-                    `https://laburl.in/${
+                    `https://laburl.vercel.app/${
                       linkData?.custom_url || linkData?.short_url
                     }`
                   );
