@@ -78,7 +78,7 @@ const LandingPage = () => {
             Make your links shine✨ with our powerful URL shortener.
           </p>
           <p
-            className="text-sm sm:text-lg
+            className="hidden text-sm sm:text-lg
       text-gray-500 sm:text-center text-pretty max-w-2xl "
           >
             Yes!! You can use it for your practical lab exams too🤫
