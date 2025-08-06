@@ -1,7 +1,7 @@
 export const faqData = [
   {
     item: 1,
-    question: "How does the LabURL shortner works?",
+    question: "How the LabURL shortener works?",
     answer:
       "When you enter a Long URL, our system generates a shorter version of that URL. This Shortened URL redirects you to the original long URL when accessed.",
   },
